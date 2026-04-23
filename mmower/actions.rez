@@ -1,0 +1,205 @@
+%% This actions library implements a kind of inverse-parser where all possible
+%% actions are generated and displayed to the player.
+
+%% See the @action definition
+
+@script {
+  class RezActionLink {
+    #id;
+    #active;
+    #category;
+    #inactiveReason;
+    #eventType;
+    #eventTarget;
+    #params;
+    #text;
+
+    constructor(category, text) {
+      this.#id = `link-${crypto.randomUUID()}`;
+      this.#category = category;
+      this.#text = text;
+    }
+
+    get id() {
+      return this.#id;
+    }
+
+    get active() {
+      return this.#active;
+    }
+
+    get category() {
+      return this.#category;
+    }
+
+    get inactiveReason() {
+      return this.#inactiveReason;
+    }
+
+    get eventType() {
+      return this.#eventType;
+    }
+
+    get eventTarget() {
+      return this.#eventTarget;
+    }
+
+    get params() {
+      return this.#params;
+    }
+
+    get text() {
+      return this.#text;
+    }
+
+    setInactive(reason) {
+      this.#active = false;
+      this.#inactiveReason = reason;
+    }
+
+    setActive(eventType, eventTarget, params = {}) {
+      this.#active = true;
+      this.#eventType = eventType;
+      this.#eventTarget = eventTarget;
+      this.#params = params;
+    }
+
+    tag() {
+      return this.#active ? this.activeTag() : this.inactiveTag();
+    }
+
+    activeTag() {
+      return `<a id="${this.#id}" data-event="${this.#eventType}" data-target="${this.#eventTarget}">${this.#text}</a>`;
+    }
+
+    inactiveTag() {
+      return `<a id="${this.#id}" href="javascript:void(0);" data-tippy-content="${this.#inactiveReason}" aria-disabled="true" class="is-disabled">${this.#text}</a>`;
+    }
+  }
+}
+
+@component action_list (bindings, assigns, content) => {
+  const actions = $game.filterObjects((o) => o.$alias === "action");
+
+  const actionLinks = actions.flatMap((action) => {
+    const objects = action.objects();
+    if(objects.length == 0) {
+      return [];
+    }
+    const links = objects.map((obj) => {
+      const decision = new RezDecision();
+      action.available(decision, obj);
+      if(decision.wasHide) {
+        return [];
+      } else {
+        return action.build_link(decision, obj);
+      }
+    });
+    return links;
+  });
+
+  const groupedLinks = Map.groupBy(actionLinks, (link) => link.category);
+  const linkMenus = Array.from(groupedLinks).map(([group, links]) => {
+    const groupTitle = group.toTitleCase();
+    const heading = `<h3 class="is-size-3">${groupTitle}</h3>`;
+    const items = links.map((link) => `<li>${link.tag()}</li>`).join("");
+    const menu = `<ul>${items}</ul>`;
+    return `${heading}${menu}`;
+  }).join("");
+
+  return linkMenus;
+}
+
+@styles {
+  a.is-disabled {
+    /* cursor: not-allowed; */
+    opacity: 0.75;
+    color: #564e4e;
+    text-decoration: none;
+  }
+}
+
+@elem action = object
+
+@schema action {
+  label: {kind: :string, required: true}
+  verb: {kind: :string, required: true}
+  determiner: {kind: :string, required: true}
+  available: {kind: :function, required: true, min_arity: 1}
+}
+
+@defaults action {
+  %% Verb is how the action is described
+  verb: _
+
+  %% Determiner
+  determiner: _
+
+  category: "actions"
+
+  %% What type of event to generate when the player clicks the action link
+  %% :card, :scene, or :interlude behaviour exactly as per normal card links
+  event: _
+  %% The target should match the event, so if the event is :card the target
+  %% would be the card id. To pass the object itself use :object
+  target: _
+
+  %% Objects are the targets of the action. If the action is "talk to" then
+  %% the objects would be all possible things the player could talk to at
+  %% that moment.
+  objects: function() {
+    return [];
+  }
+
+  %% Available is called with a RezDecision and an object and should test
+  %% when the object will accept the action using decision.hide(),
+  %% decision.yes() and decision.no("reason") as appropriate.
+  available: function(decision, obj) {
+    decision.hide();
+  }
+
+  params_for: function(obj) {
+    return {};
+  }
+
+  %% Return action link text
+  link_text: function(obj) {
+    const name = obj?.name || obj?.int_name || obj?.sdesc || "obj has no name";
+    return `${this.verb} ${this.determiner} ${name}`;
+  }
+
+  build_link: function(decision, obj) {
+    const text = this.link_text(obj);
+    const link = new RezActionLink(this.category, text);
+    if(decision.wasNo) {
+      link.setInactive(decision.reason);
+    } else {
+      if(this.target === "object") {
+        link.setActive(this.event, obj.id, this.params_for(obj));
+      } else {
+        link.setActive(this.event, this.target, this.params_for(obj));
+      }
+    }
+    return link;
+  }
+}
+
+%% Example Action
+%% @action act_talk {
+%%   label: "talk"
+%%   verb: "Talk"
+%%   determiner: "to"
+%%   category: "conversation"
+%%
+%%   event: "interlude"
+%%   target: "conversation_scene"
+%%
+%%   objects: function() {
+%%     const is_local_actor = (actor) => !actor.$template && actor !== $player && actor.location_id == $player.location_id;
+%%     return $game.getAll("actor").filter(is_local_actor);
+%%   }
+%%
+%%   available: function(decision, actor) {
+%%     actor.will_talk_to(decision, $player);
+%%   }
+%% }
