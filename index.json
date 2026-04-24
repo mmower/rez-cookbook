@@ -2,7 +2,7 @@
   "modules": [
     {
       "name": "mmower/actions",
-      "description": "Flexible reverse-parser action system.",
+      "description": "Flexible, inverse-parser, actions generator to reduce/remove hard-coded links.",
       "author": "Matt Mower",
       "since": "0.1.0"
     }

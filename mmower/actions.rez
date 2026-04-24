@@ -164,9 +164,15 @@
     return {};
   }
 
-  %% Return action link text
+  %% Return the name of the object to use in the link text
+  obj_name: function(obj) {
+    return obj?.name || obj?.int_name || obj?.sdesc || "obj has no name";
+  }
+
+  %% Return action link text. It assumes a named object (see obj_name)
+  %% override to customise link text for your action
   link_text: function(obj) {
-    const name = obj?.name || obj?.int_name || obj?.sdesc || "obj has no name";
+    const name = this.obj_name(obj);
     return `${this.verb} ${this.determiner} ${name}`;
   }
 
