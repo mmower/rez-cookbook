@@ -69,7 +69,8 @@
     }
 
     activeTag() {
-      return `<a id="${this.#id}" data-event="${this.#eventType}" data-target="${this.#eventTarget}">${this.#text}</a>`;
+      const params = Object.entries(this.#params).map(([k, v]) => ` data-${k}="${v}"`).join("");
+      return `<a id="${this.#id}" data-event="${this.#eventType}" data-target="${this.#eventTarget}"${params}>${this.#text}</a>`;
     }
 
     inactiveTag() {
@@ -141,7 +142,8 @@
   %% :card, :scene, or :interlude behaviour exactly as per normal card links
   event: _
   %% The target should match the event, so if the event is :card the target
-  %% would be the card id. To pass the object itself use :object
+  %% would be the card id. To pass the object itself use :object, To pass
+  %% the action (for event handlers) use :action
   target: _
 
   %% Objects are the targets of the action. If the action is "talk to" then
@@ -176,6 +178,8 @@
     } else {
       if(this.target === "object") {
         link.setActive(this.event, obj.id, this.params_for(obj));
+      } else if(this.target === "self") {
+        link.setActive(this.event, this.id, this.params_for(obj));
       } else {
         link.setActive(this.event, this.target, this.params_for(obj));
       }
