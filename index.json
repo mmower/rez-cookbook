@@ -13,6 +13,13 @@
       "author": "Matt Mower",
       "since": "0.1.3",
       "type": "pragma"
+    },
+    {
+      "name": "mmower/git_buildnum",
+      "description": "Adds a BUILD_NUM const from the git commit count.",
+      "author": "Matt Mower",
+      "since": "0.1.4",
+      "type": "pragma"
     }
   ]
 }
