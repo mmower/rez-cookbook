@@ -103,7 +103,7 @@
     const links = objects.map((obj) => {
       const decision = new RezDecision();
       action.available(decision, obj);
-      if(decision.wasHide) {
+      if(decision.isHidden) {
         return [];
       } else {
         return action.build_link(decision, obj);
