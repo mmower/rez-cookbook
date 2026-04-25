@@ -100,7 +100,7 @@
     if(objects.length == 0) {
       return [];
     }
-    const links = objects.map((obj) => {
+    const links = objects.flatMap((obj) => {
       const decision = new RezDecision();
       action.available(decision, obj);
       if(decision.isHidden) {
