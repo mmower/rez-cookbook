@@ -20,6 +20,13 @@
       "author": "Matt Mower",
       "since": "0.1.4",
       "type": "pragma"
+    },
+    {
+      "name": "mmower/svg_icons",
+      "description": "Converts local .svg icons into inlined @assets",
+      "author": "Matt Mower",
+      "since": "0.1.5",
+      "type": "pragma"
     }
   ]
 }
