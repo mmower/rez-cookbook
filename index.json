@@ -4,7 +4,15 @@
       "name": "mmower/actions",
       "description": "Flexible, inverse-parser, actions generator to reduce/remove hard-coded links.",
       "author": "Matt Mower",
-      "since": "0.1.0"
+      "since": "0.1.0",
+      "type": "lib"
+    },
+    {
+      "name": "mmower/source_explorer",
+      "description": "Creates a mini-site within the game to explore the games source.",
+      "author": "Matt Mower",
+      "since": "0.1.3",
+      "type": "pragma"
     }
   ]
 }

@@ -3,6 +3,9 @@
 
 %% See the @action definition
 
+%% If you have Tippy.js installed you can use
+%% RezActionLink.inactiveTagRenderer = RezActionLink.tippyInactiveTag;
+
 @script {
   class RezActionLink {
     #id;
@@ -74,9 +77,19 @@
     }
 
     inactiveTag() {
-      return `<a id="${this.#id}" href="javascript:void(0);" data-tippy-content="${this.#inactiveReason}" aria-disabled="true" class="is-disabled">${this.#text}</a>`;
+      return RezActionLink.inactiveTagRenderer(this.#id, this.#inactiveReason, this.#text);
+    }
+
+    static tippyInactiveTag(id, reason, text) {
+      return `<a id="${id}" href="javascript:void(0);" data-tippy-content="${reason}" aria-disabled="true" class="is-disabled">${text}</a>`;
+    }
+
+    static plainInactiveTag(id, reason, text) {
+      return `<a id="${id}" href="javascript:void(0);" title="${reason}" aria-disabled="true" class="is-disabled">${text} [${reason}]</a>`;
     }
   }
+
+  RezActionLink.inactiveTagRenderer = RezActionLink.plainInactiveTag;
 }
 
 @component action_list (bindings, assigns, content) => {
