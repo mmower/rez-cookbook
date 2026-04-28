@@ -1,8 +1,10 @@
+%% actions.rez v0.2.0
+%%
 %% This actions library implements a kind of inverse-parser where all possible
 %% actions are generated and displayed to the player.
-
+%%
 %% See the @action definition
-
+%%
 %% If you have Tippy.js installed you can use
 %% RezActionLink.inactiveTagRenderer = RezActionLink.tippyInactiveTag;
 
@@ -16,11 +18,13 @@
     #eventTarget;
     #params;
     #text;
+    #forced;
 
     constructor(category, text) {
       this.#id = `link-${crypto.randomUUID()}`;
       this.#category = category;
       this.#text = text;
+      this.#forced = false;
     }
 
     get id() {
@@ -53,6 +57,14 @@
 
     get text() {
       return this.#text;
+    }
+
+    get forced() {
+      return this.#forced;
+    }
+
+    set forced(forced) {
+      this.#forced = !!forced;
     }
 
     setInactive(reason) {
@@ -92,36 +104,108 @@
   RezActionLink.inactiveTagRenderer = RezActionLink.plainInactiveTag;
 }
 
-@component action_list (bindings, assigns, content) => {
-  const actions = $game.filterObjects((o) => o.$alias === "action");
+@object action_manager {
+  $global: true
 
-  const actionLinks = actions.flatMap((action) => {
-    const objects = action.objects();
-    if(objects.length == 0) {
-      return [];
-    }
-    const links = objects.flatMap((obj) => {
-      const decision = new RezDecision();
-      action.available(decision, obj);
-      if(decision.isHidden) {
+  %%
+  %% This object is available as $action_manager and when the build_actions
+  %% function is called it creates two transient JS properties:
+  %% - menuNames: an array of menu names
+  %% - menuLinks: a map from menu name to a menu of links
+  %%
+  build: function() {
+    const actions = $game.filterObjects((o) => o.$alias === "action");
+
+    const actionLinks = actions.flatMap((action) => {
+      const objects = action.objects();
+      if(objects.length == 0) {
         return [];
-      } else {
-        return action.build_link(decision, obj);
       }
+      const links = objects.flatMap((obj) => {
+        const decision = new RezDecision();
+        action.available(decision, obj);
+        if(decision.isHidden) {
+          return [];
+        } else {
+          return action.build_link(decision, obj);
+        }
+      });
+      return links;
     });
-    return links;
-  });
 
-  const groupedLinks = Map.groupBy(actionLinks, (link) => link.category);
-  const linkMenus = Array.from(groupedLinks).map(([group, links]) => {
-    const groupTitle = group.toTitleCase();
-    const heading = `<h3 class="is-size-3">${groupTitle}</h3>`;
-    const items = links.map((link) => `<li>${link.tag()}</li>`).join("");
-    const menu = `<ul>${items}</ul>`;
-    return `${heading}${menu}`;
+    // Note that we are assigning to JS properties rather than Rez attributes
+    // so these won't be persisted. That's expected, they should be rebuilt
+    // each time anyway
+    this.menuNames = this.sortMenus(actionLinks.map((link) => link.category).uniq());
+    this.menuLinks = Map.groupBy(actionLinks, (link) => link.category);
+  }
+
+  sortMenus: function(menuNames) {
+    return menuNames.sort();
+  }
+
+  linksForMenu: function(menuName) {
+    return this.menuLinks.get(menuName, []);
+  }
+
+  format_link: function(menu, link) {
+    const formatterName = `format_${menu}_link`;
+    const formatter = (typeof(this[formatterName]) === "function" ? this[formatterName] : this.default_format_link).bind(this);
+    return formatter(link);
+  }
+
+  format_menu: function(menu, links) {
+    const formatterName = `format_${menu}_links`;
+    const formatter = (typeof(this[formatterName]) === "function" ? this[formatterName] : this.default_format_menu).bind(this);
+    return formatter(menu, links);
+  }
+
+  default_format_link: function(link) {
+    return `<li>${link.tag()}</li>`;
+  }
+
+  default_format_menu: function(menu, links) {
+    const items = links.map((link) => this.format_link(menu, link)).join("");
+    const list = `<ul>${items}</ul>`;
+
+    const menuName = menu.toTitleCase();
+    const heading = `<h3 class="is-size-3">${menuName}</h3>`;
+
+    return `${heading}${list}`;
+  }
+}
+
+%% The action_list component is designed to create a list of menus using
+%% either an `include` or `exclude` attribute to define menus that are to
+%% be shown or excluded
+%% <.action_menu include="move,act" />
+%% <.action_menu exclude="topics" />
+@component action_list (bindings, assigns, content) => {
+  const allMenus = $action_manager.menuNames;
+  let activeMenus = [];
+  if(typeof(assigns.include) !== "undefined") {
+    debugger;
+    const includedMenus = assigns.include.split(",").map((s) => s.trim());
+    activeMenus = allMenus.filter((menuName) => includedMenus.includes(menuName));
+  } else if(typeof(assigns.exclude) !== "undefined") {
+    const excludedMenus = assigns.exclude.split(",").map((s) => s.trim());
+    activeMenus = allMenus.filter((menuName) => !excludedMenus.includes(menuName));
+  } else {
+    activeMenus = allMenus;
+  }
+
+  return activeMenus.map((menuName) => {
+    const links = $action_manager.linksForMenu(menuName);
+    return $action_manager.format_menu(menuName, links);
   }).join("");
+}
 
-  return linkMenus;
+%% The action_menu component is designed to create a single formatted
+%% action menu. <.action_menu menu="topics" />
+@component action_menu (bindings, assigns, content) => {
+  const menuName = assigns.menu;
+  const links = $action_manager.linksForMenu(menuName);
+  return $action_manager.format_menu(menuName, links);
 }
 
 @styles {
@@ -203,26 +287,7 @@
         link.setActive(this.event, this.target, this.params_for(obj));
       }
     }
+    link.forced = decision.getData("forced", false);
     return link;
   }
 }
-
-%% Example Action
-%% @action act_talk {
-%%   label: "talk"
-%%   verb: "Talk"
-%%   determiner: "to"
-%%   category: "conversation"
-%%
-%%   event: "interlude"
-%%   target: "conversation_scene"
-%%
-%%   objects: function() {
-%%     const is_local_actor = (actor) => !actor.$template && actor !== $player && actor.location_id == $player.location_id;
-%%     return $game.getAll("actor").filter(is_local_actor);
-%%   }
-%%
-%%   available: function(decision, actor) {
-%%     actor.will_talk_to(decision, $player);
-%%   }
-%% }
