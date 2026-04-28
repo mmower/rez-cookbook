@@ -121,7 +121,8 @@
       if(objects.length == 0) {
         return [];
       }
-      const links = objects.flatMap((obj) => {
+
+      const allLinks = objects.flatMap((obj) => {
         const decision = new RezDecision();
         action.available(decision, obj);
         if(decision.isHidden) {
@@ -130,7 +131,13 @@
           return action.build_link(decision, obj);
         }
       });
-      return links;
+
+      const hasForced = links.filter((link) => link.forced).length > 0;
+      if(hasForced) {
+        return allLinks.filter((link) => link.forced);
+      } else {
+        return allLinks;
+      }
     });
 
     // Note that we are assigning to JS properties rather than Rez attributes

@@ -1,9 +1,22 @@
-# Actions Library (v0.2.0)
+# Actions Library (v0.2.1)
 
-This library is a flexible "inverse parser" style action library.
+This library is a flexible actions system that could be the basis for an [inverse
+parser](https://grokipedia.com/page/inverse_parser) style action library [^1].
 
-What that means is that, at any given point, the library will enumerate all of
-the actions that are available to the player and present them.
+The central concept is to define all of the actions that you want a player to be
+able to take, and allow the system to determine at any given time which should be
+available.
+
+This library provides the `@action` element to authors that allows describing the
+actions a player can take. It it "object" aware in that an action can decide which
+objects it can be applie to.
+
+For example a "talk" action can determine which NPCs are in the players location
+that are willing to talk to the player and offer the "Talk" option for those.
+
+The authors job is to provide all of the `@action` definitions and behaviour that
+represent what players can do in their game. The library takes care of presenting
+those as links that trigger the appropriate effects.
 
 ## Action Definition
 
@@ -160,3 +173,18 @@ RezActionLink.inactiveTagRenderer = RezActionLink.tippyInactiveTag;
 
 To use some other method see the actions.rez and implement a different inactive tag
 renderer.
+
+## Forced Links
+
+There are some situations where you wish to force a choice on the player. For example
+an NPC might not allow a player to leave before having a dialog. In this case an
+`@action` can override `available:` and use `decision.yes({forced: true})` so that
+the action is forced. When at least one forced action is present the default formatter
+will hide all other links.
+
+## Footnotes
+
+[^1]: In a proper inverse-parser as imagined by Chris Crawford the action is constructed
+incrementally where the current approach of actions is enumerative. But there is a basis
+for experimentation as you could enumerate the links and then build incrementally. This
+is a task for the future.
