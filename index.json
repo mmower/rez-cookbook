@@ -4,28 +4,28 @@
       "name": "mmower/actions",
       "description": "Flexible, inverse-parser, actions generator to reduce/remove hard-coded links.",
       "author": "Matt Mower",
-      "version": "v0.2.0",
+      "version": "0.2.0",
       "type": "lib"
     },
     {
       "name": "mmower/source_explorer",
       "description": "Creates a mini-site within the game to explore the games source.",
       "author": "Matt Mower",
-      "version": "v0.1.8",
+      "version": "0.1.8",
       "type": "pragma"
     },
     {
       "name": "mmower/git_buildnum",
       "description": "Adds a BUILD_NUM const from the git commit count.",
       "author": "Matt Mower",
-      "version": "v0.1.8",
+      "version": "0.1.8",
       "type": "pragma"
     },
     {
       "name": "mmower/svg_icons",
       "description": "Converts local .svg icons into inlined @assets",
       "author": "Matt Mower",
-      "version": "v0.1.8",
+      "version": "0.1.8",
       "type": "pragma"
     }
   ]
