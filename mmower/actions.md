@@ -1,4 +1,4 @@
-# Actions Library (v0.2.1)
+# Actions Library (v0.2.3)
 
 This library is a flexible actions system that could be the basis for an [inverse
 parser](https://grokipedia.com/page/inverse_parser) style action library [^1].
@@ -97,6 +97,18 @@ The `action_manager` object handles collecting and presenting available actions 
 with two provided components `<.action_links />` and `<.action_menu />`.
 
 The `action_manager` iterates through all `@action` elements first calling their `objects:` function to see if they apply to any objects and then the `available:` function to see which objects it is available for.
+
+To use the `action_manager` across all scenes in the game use the following:
+
+```
+@game {
+  on_will_render: ()=> {
+    $action_manager.build();
+  }
+}
+```
+
+Alternatively you can do this at the scene or card level.
 
 ## Link Formatting
 
