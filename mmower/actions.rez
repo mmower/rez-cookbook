@@ -132,7 +132,7 @@
         }
       });
 
-      const hasForced = links.filter((link) => link.forced).length > 0;
+      const hasForced = allLinks.filter((link) => link.forced).length > 0;
       if(hasForced) {
         return allLinks.filter((link) => link.forced);
       } else {
