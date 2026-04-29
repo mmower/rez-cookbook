@@ -1,4 +1,4 @@
-# Actions Library (v0.2.6)
+# Actions Library (v0.2.7)
 # by Matt Mower <self@mattmower.com>
 
 This library is a flexible actions system that could be the basis for an [inverse

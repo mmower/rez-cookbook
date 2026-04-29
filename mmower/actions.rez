@@ -1,4 +1,4 @@
-%% actions.rez v0.2.6
+%% actions.rez v0.2.7
 %%
 %% This actions library implements a kind of inverse-parser where all possible
 %% actions are generated and displayed to the player.
@@ -191,7 +191,6 @@
   const allMenus = $action_manager.menuNames;
   let activeMenus = [];
   if(typeof(assigns.include) !== "undefined") {
-    debugger;
     const includedMenus = assigns.include.split(",").map((s) => s.trim());
     activeMenus = allMenus.filter((menuName) => includedMenus.includes(menuName));
   } else if(typeof(assigns.exclude) !== "undefined") {
