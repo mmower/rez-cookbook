@@ -122,8 +122,27 @@ get passed in the link that is generated.
 ### obj_name
 
 When formatting a link the `@action` obj_name will be called with the object. The default
-implementation looks for a `name`, `int_name`, or `sdesc` property. You can either define
-one of these or override to return whatever property you like.
+implementation looks for an `as_object`, `name`, `int_name`, or `sdesc` attribute.
+
+You can either define one of these or override to return whatever property you like.
+
+We recommend creating an `as_object` attribute on any element that you expect to be
+the object of an action. For example:
+
+```
+@action talk {
+  verb: "Talk"
+  determiner: "to"
+}
+
+@actor the_attendent {
+  name: "Attendent"
+  as_object: "the attendent"
+}
+```
+
+This will lead to "Talk to the attendent" being displayed for the object. For finer grained
+control override the `link_text` attribute in your action.
 
 ### link_text
 

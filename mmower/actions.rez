@@ -277,7 +277,7 @@
 
   %% Return the name of the object to use in the link text
   obj_name: function(obj) {
-    return obj?.name || obj?.int_name || obj?.sdesc || "obj has no name";
+    return obj?.as_object || obj?.name || obj?.int_name || obj?.sdesc || "unnamed";
   }
 
   %% Return action link text. It assumes a named object (see obj_name)
