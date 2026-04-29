@@ -114,7 +114,7 @@
   %% - menuLinks: a map from menu name to a menu of links
   %%
   build: function() {
-    const actions = $game.filterObjects((o) => o.$alias === "action");
+    const actions = $game.filterObjects((o) => !o.$template && o.$alias === "action");
 
     const actionLinks = actions.flatMap((action) => {
       const objects = action.objects();

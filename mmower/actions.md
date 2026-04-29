@@ -194,6 +194,28 @@ an NPC might not allow a player to leave before having a dialog. In this case an
 the action is forced. When at least one forced action is present the default formatter
 will hide all other links.
 
+## Calling default behaviours
+
+There may be occasions where you want to override an action behaviour but, conditionally,
+use the default behaviour. The easiest way to achieve this in Rez is:
+
+```
+@action T_action {
+  $global: true
+  $template: true
+}
+
+@action my_action {
+  link_text: function(obj) {
+    if(...) {
+      return "...";
+    } else {
+      return T_action.link_text(obj);
+    }
+  }
+}
+```
+
 ## Footnotes
 
 [^1]: In a proper inverse-parser as imagined by Chris Crawford the action is constructed

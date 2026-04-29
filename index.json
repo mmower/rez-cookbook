@@ -4,7 +4,7 @@
       "name": "mmower/actions",
       "description": "Flexible, inverse-parser, actions generator to reduce/remove hard-coded links.",
       "author": "Matt Mower",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "type": "lib"
     },
     {
