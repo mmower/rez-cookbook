@@ -2,9 +2,9 @@
   "modules": [
     {
       "name": "mmower/actions",
-      "description": "Flexible, inverse-parser, actions generator to reduce/remove hard-coded links.",
+      "description": "Flexible, storylets/inverse-parser style, actions generator to reduce/remove hard-coded links.",
       "author": "Matt Mower",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "type": "lib"
     },
     {

@@ -230,21 +230,27 @@
   label: {kind: :string, required: true}
   verb: {kind: :string, required: true}
   determiner: {kind: :string, required: true}
+  category: {kind: :string, required: true}
   available: {kind: :function, required: true, min_arity: 1}
 }
 
 @defaults action {
+  %% Label is the internal description of the action
+  label: _
+
   %% Verb is how the action is described
   verb: _
 
-  %% Determiner
+  %% Determiner is the conjoining word from action to object (e.g. the, to)
   determiner: _
 
+  %% Category groups related actions together
   category: "actions"
 
   %% What type of event to generate when the player clicks the action link
   %% :card, :scene, or :interlude behaviour exactly as per normal card links
   event: _
+
   %% The target should match the event, so if the event is :card the target
   %% would be the card id. To pass the object itself use :object, To pass
   %% the action (for event handlers) use :action
@@ -264,6 +270,7 @@
     decision.hide();
   }
 
+  %% Generates a map of params applied to a link referencing the given object.
   params_for: function(obj) {
     return {};
   }
@@ -280,6 +287,8 @@
     return `${this.verb} ${this.determiner} ${name}`;
   }
 
+  %% Responsible for creating a RezActionLink for the given object given the
+  %% decision about whether it is a legal, available, object for the action.
   build_link: function(decision, obj) {
     const text = this.link_text(obj);
     const link = new RezActionLink(this.category, text);
