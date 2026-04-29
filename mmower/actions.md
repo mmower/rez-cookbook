@@ -1,4 +1,5 @@
-# Actions Library (v0.2.3)
+# Actions Library (v0.2.6)
+# by Matt Mower <self@mattmower.com>
 
 This library is a flexible actions system that could be the basis for an [inverse
 parser](https://grokipedia.com/page/inverse_parser) style action library [^1].

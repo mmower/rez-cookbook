@@ -8,6 +8,13 @@
       "type": "lib"
     },
     {
+      "name": "mmower/maps",
+      "description": "Define map locations.",
+      "author": "Matt Mower",
+      "version": "0.1.0",
+      "type": "lib"
+    },
+    {
       "name": "mmower/source_explorer",
       "description": "Creates a mini-site within the game to explore the games source.",
       "author": "Matt Mower",

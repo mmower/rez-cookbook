@@ -1,0 +1,84 @@
+%% maps.rez v0.1.0
+%%
+%% The Maps library
+%%
+%% Zones a way to relate locations together. We might have locations within
+%% a city which form a Zone, or sectors a city, or really anything. It is
+%% implicit that locations within the same zone are generally accessible to
+%% each other, modulo, blockages (locks, key cards, relationships and so on)
+
+%% Using this library requires that you have defined an `@actor` with id
+%% #player and that this actor has a location_id property.
+
+@elem zone = object
+
+@schema zone {
+  label: {kind: [:string :property], required: true}
+}
+
+@defaults zone {
+  $init_after: [@location]
+
+  %% This is going to be a common pattern
+  %% We cannot cache object references, only ids, but we don't want to set the
+  %% ids once because reloading a saved game, more locations might have been
+  %% added to the base game. So we use a property but its less expensive than
+  %% it seems because we use a caching JS property to avoid looking them up
+  %% once they are set in-browser.
+  location_ids: ^p{
+    return $game.filterObjects((o) => !o.$template && o?.$alias === "location" && o?.zone_id == this.id).map((o) => o.id);
+  }
+
+  locations: ^p{
+    if(!this.locations_cache) {
+      this.locations_cache = this.location_ids.refs();
+    }
+    return this.locations_cache;
+  }
+}
+
+%% Locations are a special kind of card that also represents a location with
+%% exits which are the IDs of other locations reachable from this location.
+%% The reachable function receives a RezDecision and determines whether this
+%% location is hidden, blocked, or available.
+
+@elem location = card
+
+@schema location {
+  zone_id: {kind: :elem_ref, required: true}
+  int_name: {kind: :string, required: true}
+  description: {kind: [:string :property], required: true}
+  exits: {kind: :list, ref_elem: @location}
+  reachable: {kind: :function}
+}
+
+@defaults location {
+  zone_id: _
+
+  int_name: _
+
+  ext_name: ^i{return this.int_name;}
+
+  description: ^p{return `${this.zone.label} ${this.label}`;}
+
+  exits: []
+
+  on_will_start: (location) => {
+    const player = $("player");
+    player.last_location_id = player.location_id;
+    player.location_id = location.id;
+  }
+
+  reachable: function(decision) {
+    decision.yes();
+  }
+
+  in_same_zone_as: function(location) {
+    return this.zone_id === location.zone_id;
+  }
+}
+
+@schema actor {
+  location_id: {kind: :elem_ref, required: true, ref_elem: @location}
+  last_location_id: {kind: :elem_ref, required: true, ref_elem: @location}
+}
