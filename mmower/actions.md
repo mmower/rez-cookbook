@@ -1,4 +1,4 @@
-# Actions Library (v0.2.7)
+# Actions Library (v0.3.0)
 # by Matt Mower <self@mattmower.com>
 
 This library is a flexible actions system that could be the basis for an [inverse
@@ -86,6 +86,16 @@ The `objects:` attribute returns a (possibly empty) array of objects that the `@
 be applied to. In the given example that is `@actor`s that are not the player but in the
 players location.
 
+In our speaking example we would be looking to identify all of the NPCs that that the player
+could speak to. In this case we could remove any that weren't in the players location (since
+we'd anyway say 'no' to them later in the `available` callback).
+
+Sometimes there isn't really an object in which case we could return a dummy object (for
+example `[$player]`) to ensure that the action is provided at least once.
+
+What this means is that each action will result in a list of objects for which it will
+call the `available:` callback to determine whether the action makes sense for that object.
+
 The `available:` attribute determines whether the action should be available for a given
 object and uses the provided `RezDecision` to signal the outcome. Call exactly one of:
 
@@ -93,7 +103,10 @@ object and uses the provided `RezDecision` to signal the outcome. Call exactly o
 |------|-------------|
 | `decision.hide()` | Nothing — the action is completely absent from the UI |
 | `decision.no("reason")` | A disabled (greyed-out) link showing the reason why it's unavailable |
-| `decision.yes()` | An active, clickable link |
+| `decision.yes(params)` | An active, clickable link |
+
+When calling `yes` you can optionally return an object containing params that can be used
+for the action on this object.
 
 `RezDecision` exists because there are multiple possible outcomes (making a boolean true/false return impossible) that can also be qualified, for example a no response can also carry a reason to be presented to the player.
 
