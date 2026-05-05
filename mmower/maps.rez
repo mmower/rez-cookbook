@@ -50,12 +50,17 @@
   description: {kind: [:string :property], required: true}
   exits: {kind: :list, ref_elem: @location}
   reachable: {kind: :function}
+  visit_count: 0
 }
 
 @defaults location {
   zone_id: _
 
   int_name: _
+
+  visited: ^p{
+    return this.visit_count > 0;
+  }
 
   ext_name: ^i{return this.int_name;}
 

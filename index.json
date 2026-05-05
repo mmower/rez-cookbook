@@ -4,12 +4,19 @@
       "name": "mmower/actions",
       "description": "Flexible, storylets/inverse-parser style, actions generator to reduce/remove hard-coded links.",
       "author": "Matt Mower",
-      "version": "0.2.7",
+      "version": "0.2.9",
       "type": "lib"
     },
     {
       "name": "mmower/maps",
       "description": "Define map locations.",
+      "author": "Matt Mower",
+      "version": "0.1.1",
+      "type": "lib"
+    },
+    {
+      "name": "mmower/components",
+      "description": "Custom components I find useful.",
       "author": "Matt Mower",
       "version": "0.1.0",
       "type": "lib"

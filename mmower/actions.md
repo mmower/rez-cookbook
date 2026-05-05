@@ -33,7 +33,7 @@ Here is an `@action` that generates links for talking to `@actor` NPCs.
   label: "talk"
   verb: "Talk"
   determiner: "to"
-  menu: "conversation"
+  category: "conversation"
 
   event: "interlude"
   target: "conversation_scene"
@@ -52,7 +52,7 @@ Here is an `@action` that generates links for talking to `@actor` NPCs.
 The `label:` attribute is an internal description while the `verb:` attribute is a player-
 facing description of the action.
 
-The `menu:` attribute is used to group related actions together. In this case "conversation"
+The `category:` attribute is used to group related actions together. In this case "conversation"
 links.
 
 The `determiner:` attribute is used by the default link formatter to join together the verb and the object, e.g. "Talk to Brian", "Open the airlock".
@@ -86,16 +86,24 @@ The `objects:` attribute returns a (possibly empty) array of objects that the `@
 be applied to. In the given example that is `@actor`s that are not the player but in the
 players location.
 
-The `available:` attribute determins whether the action should be available for a given
-object and uses the provided RezDecision to determine the result for that object. The result should be a call to one of `decision.yes()`, `decision.no("reason")`, or `decision.hide()`.
+The `available:` attribute determines whether the action should be available for a given
+object and uses the provided `RezDecision` to signal the outcome. Call exactly one of:
 
-For action forcing use `decision.yes({force: true})`. If at least one action is being
+| Call | Player sees |
+|------|-------------|
+| `decision.hide()` | Nothing — the action is completely absent from the UI |
+| `decision.no("reason")` | A disabled (greyed-out) link showing the reason why it's unavailable |
+| `decision.yes()` | An active, clickable link |
+
+`RezDecision` exists because there are multiple possible outcomes (making a boolean true/false return impossible) that can also be qualified, for example a no response can also carry a reason to be presented to the player.
+
+For action forcing, use `decision.yes({forced: true})`. If at least one forced action is
 forced then only forced actions will be available.
 
 ## Action Generation
 
 The `action_manager` object handles collecting and presenting available actions in conjection
-with two provided components `<.action_links />` and `<.action_menu />`.
+with two provided components `<.action_list />` and `<.action_menu />`.
 
 The `action_manager` iterates through all `@action` elements first calling their `objects:` function to see if they apply to any objects and then the `available:` function to see which objects it is available for.
 
@@ -162,10 +170,10 @@ Links are presented using the `action_manager` provided in the library and publi
 1. Generating available actions
 2. Converting actions into markup
 
-The `action_manager` has a `build_actions:` function attribute that uses the mechanisms described
+The `action_manager` has a `build:` function attribute that uses the mechanisms described
 above to create a map of `RezActionLink` objects representing all of the available actions. The map keys are menu names where the values are an array of links for that menu.
 
-Link menus can be converted into markup using either the `<.action_links />` or `<.action_menu />` `@component`s provided. Or you can use them as the basis for your own custom component.
+Link menus can be converted into markup using either the `<.action_list />` or `<.action_menu />` `@component`s provided. Or you can use them as the basis for your own custom component.
 
 The default menus are formatted as unordered lists of links, with a menu title.
 

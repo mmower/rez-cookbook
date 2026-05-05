@@ -117,7 +117,7 @@
     const actions = $game.filterObjects((o) => !o.$template && o.$alias === "action");
 
     const actionLinks = actions.flatMap((action) => {
-      const objects = action.objects();
+      const objects = ensureArray(action.objects());
       if(objects.length == 0) {
         return [];
       }
@@ -230,7 +230,7 @@
   verb: {kind: :string, required: true}
   determiner: {kind: :string, required: true}
   category: {kind: :string, required: true}
-  available: {kind: :function, required: true, min_arity: 1}
+  available: {kind: :function, required: true, min_arity: 2}
 }
 
 @defaults action {
