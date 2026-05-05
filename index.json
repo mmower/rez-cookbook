@@ -15,13 +15,6 @@
       "type": "lib"
     },
     {
-      "name": "mmower/components",
-      "description": "Custom components I find useful.",
-      "author": "Matt Mower",
-      "version": "0.1.0",
-      "type": "lib"
-    },
-    {
       "name": "mmower/source_explorer",
       "description": "Creates a mini-site within the game to explore the games source.",
       "author": "Matt Mower",
