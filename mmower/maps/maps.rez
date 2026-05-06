@@ -19,14 +19,16 @@
 @defaults zone {
   $init_after: [@location]
 
-  %% This is going to be a common pattern
-  %% We cannot cache object references, only ids, but we don't want to set the
-  %% ids once because reloading a saved game, more locations might have been
-  %% added to the base game. So we use a property but its less expensive than
-  %% it seems because we use a caching JS property to avoid looking them up
-  %% once they are set in-browser.
+  %% We should not store object references in Rez attributes, only ids.
+  %% At the same time we don't want a static set of ids because locations
+  %% might be added to the base game after launch.
+  %% So we cache the location object references in an array in a JS property
+  %% that won't be persisted.
+  %% This array gets populated on first access when the game begins or after
+  %% the game is loaded.
   location_ids: ^p{
-    return $game.filterObjects((o) => !o.$template && o?.$alias === "location" && o?.zone_id == this.id).map((o) => o.id);
+    return $game.filterObjects((o) => o?.kind === "location" &&
+                                      o?.zone_id === this.id).map((o) => o.id);
   }
 
   locations: ^p{
@@ -70,7 +72,7 @@
 
   exits: []
 
-  on_will_start: (location) => {
+  on_will_start: +(location) => {
     const player = $("player");
     player.last_location_id = player.location_id;
     player.location_id = location.id;
