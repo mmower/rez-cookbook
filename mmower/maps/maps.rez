@@ -50,13 +50,15 @@
   description: {kind: [:string :property], required: true}
   exits: {kind: :list, ref_elem: @location}
   reachable: {kind: :function}
-  visit_count: 0
+  visit_count: {kind: :number}
 }
 
 @defaults location {
   zone_id: _
 
   int_name: _
+
+  visit_count: 0
 
   visited: ^p{
     return this.visit_count > 0;
