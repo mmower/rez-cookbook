@@ -3,6 +3,7 @@
     "actions.rez"
   ],
   "docs": [
-    "actions.md"
+    "actions.md",
+    "sample_actions.png"
   ]
 }

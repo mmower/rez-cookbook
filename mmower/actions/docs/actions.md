@@ -9,7 +9,7 @@ lists of choices. Further if choices become dependent upon other systems (e.g. w
 not a door can be opened depends upon whether it is locked) the burden increases. The
 problem can be solved ad hoc but the actions library presents an overall easier way.
 
-!(sample_actions.png)
+![sample action list](sample_actions.png)
 
 The Actions library is a flexible system to present a dynamic set of choices to the player
 based on their situation. In this example the movement options are generated from a map
