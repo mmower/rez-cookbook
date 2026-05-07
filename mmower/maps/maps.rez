@@ -27,7 +27,7 @@
   %% This array gets populated on first access when the game begins or after
   %% the game is loaded.
   location_ids: ^p{
-    return $game.filterObjects((o) => o?.kind === "location" &&
+    return $game.filterObjects((o) => o.kindOf("location") &&
                                       o?.zone_id === this.id).map((o) => o.id);
   }
 

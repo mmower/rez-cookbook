@@ -51,7 +51,7 @@ Here is an `@action` that generates links for talking to `@actor` NPCs.
 
   objects: function() {
     const location_id = $player.location_id;
-    return $game.filterObjects((obj) => obj.kind === "actor" && actor.location_id === location_id);
+    return $game.filterObjects((obj) => obj.kindOf("actor") && actor.location_id === location_id);
   }
 
   available: function(decision, actor) {
