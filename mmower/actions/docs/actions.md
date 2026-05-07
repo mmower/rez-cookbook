@@ -1,19 +1,30 @@
-# Actions Library (v0.3.0)
+# Actions Library (v0.3)
 # by Matt Mower <self@mattmower.com>
 
-This library is a flexible actions system that could be the basis for an [inverse
-parser](https://grokipedia.com/page/inverse_parser) style action library [^1].
+In most choice based games, including Rez games, the author hard codes the choices
+available to the player at any point using a set of `<a>` links.
+
+As a game grows and the number of options increases, it can become a burden to maintain
+lists of choices. Further if choices become dependent upon other systems (e.g. whether or
+not a door can be opened depends upon whether it is locked) the burden increases. The
+problem can be solved ad hoc but the actions library presents an overall easier way.
+
+!(sample_actions.png)
+
+The Actions library is a flexible system to present a dynamic set of choices to the player
+based on their situation. In this example the movement options are generated from a map
+of locations and exits, not hard-coded by the author.
 
 The central concept is to define all of the actions that you want a player to be
-able to take, and allow the system to determine at any given time which should be
-available.
+able to take, and let the system determine which actions are available at any given
+time.
 
-This library provides the `@action` element to authors that allows describing the
-actions a player can take. It it "object" aware in that an action can decide which
-objects it can be applie to.
+This library provides an `@action` element for authors to describe player actions in
+terms of what they do and when & if they are available. Actions can also decide which
+objects in the environment they can be applied to.
 
-For example a "talk" action can determine which NPCs are in the players location
-that are willing to talk to the player and offer the "Talk" option for those.
+For example a "talk" action can determine which NPCs are in the players location and
+who are willing to talk to the player, and offer the "Talk" option only for those actors.
 
 The authors job is to provide all of the `@action` definitions and behaviour that
 represent what players can do in their game. The library takes care of presenting
@@ -39,8 +50,8 @@ Here is an `@action` that generates links for talking to `@actor` NPCs.
   target: "conversation_scene"
 
   objects: function() {
-    const is_local_actor = (actor) => !actor.$template && actor !== $player && actor.location_id == $player.location_id;
-    return $game.getAll("actor").filter(is_local_actor);
+    const location_id = $player.location_id;
+    return $game.filterObjects((obj) => obj.kind === "actor" && actor.location_id === location_id);
   }
 
   available: function(decision, actor) {
@@ -53,9 +64,9 @@ The `label:` attribute is an internal description while the `verb:` attribute is
 facing description of the action.
 
 The `category:` attribute is used to group related actions together. In this case "conversation"
-links.
+links. Later you can use the category to display different kinds of links differently.
 
-The `determiner:` attribute is used by the default link formatter to join together the verb and the object, e.g. "Talk to Brian", "Open the airlock".
+The `determiner:` attribute is used by the default link formatter to join together the verb and the object, e.g. "Talk to Brian" (`determiner: "to"`), "Open the airlock" (`determiner: "the").
 
 The `event:` and `target:` attributes determine what happens if the player clicks on this link when it is active. The specified event is sent:
 
@@ -256,10 +267,3 @@ use the default behaviour. The easiest way to achieve this in Rez is:
   }
 }
 ```
-
-## Footnotes
-
-[^1]: In a proper inverse-parser as imagined by Chris Crawford the action is constructed
-incrementally where the current approach of actions is enumerative. But there is a basis
-for experimentation as you could enumerate the links and then build incrementally. This
-is a task for the future.

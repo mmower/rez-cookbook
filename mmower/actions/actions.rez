@@ -114,7 +114,7 @@
   %% - menuLinks: a map from menu name to a menu of links
   %%
   build: function() {
-    const actions = $game.filterObjects((o) => !o.$template && o.$alias === "action");
+    const actions = $game.filterObjects((o) => o.kindOf("action"));
 
     const actionLinks = actions.flatMap((action) => {
       const objects = ensureArray(action.objects());
@@ -241,6 +241,8 @@
   verb: _
 
   %% Determiner is the conjoining word from action to object (e.g. the, to)
+  %% Leave it as the empty string "" to delegate to the object (calls
+  %% obj.determiner(action) to get the determiner.
   determiner: _
 
   %% Category groups related actions together
@@ -279,11 +281,22 @@
     return obj?.as_object || obj?.name || obj?.int_name || obj?.sdesc || "unnamed";
   }
 
+  %% If the object doesn't declare a determiner for this action, use the
+  %% specified determiner
+  obj_determiner: function(obj) {
+    if(typeof(obj?.determiner) === "function") {
+      return obj.determiner(this);
+    } else {
+      return this.determiner;
+    }
+  }
+
   %% Return action link text. It assumes a named object (see obj_name)
   %% override to customise link text for your action
   link_text: function(obj) {
     const name = this.obj_name(obj);
-    return `${this.verb} ${this.determiner} ${name}`;
+    const determiner = this.obj_determiner(obj);
+    return `${this.verb} ${determiner} ${name}`;
   }
 
   %% Responsible for creating a RezActionLink for the given object given the
