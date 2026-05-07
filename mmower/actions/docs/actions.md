@@ -66,7 +66,7 @@ facing description of the action.
 The `category:` attribute is used to group related actions together. In this case "conversation"
 links. Later you can use the category to display different kinds of links differently.
 
-The `determiner:` attribute is used by the default link formatter to join together the verb and the object, e.g. "Talk to Brian" (`determiner: "to"`), "Open the airlock" (`determiner: "the").
+The `determiner:` attribute is used by the default link formatter to join together the verb and the object, e.g. "Talk to Brian" (`determiner: "to"`), "Open the airlock" (`determiner: "the"`).
 
 The `event:` and `target:` attributes determine what happens if the player clicks on this link when it is active. The specified event is sent:
 
