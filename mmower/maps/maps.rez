@@ -76,6 +76,13 @@
     const player = $("player");
     player.last_location_id = player.location_id;
     player.location_id = location.id;
+
+    location.runEvent("player_enters");
+    player.runEvent("changed_location");
+  }
+
+  on_player_enters: +(location) => {
+    location.visit_count += 1;
   }
 
   reachable: function(decision) {

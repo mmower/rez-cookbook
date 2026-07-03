@@ -43,6 +43,41 @@ The `@location` element is a type of `@card` that represents a location in the m
 
 When a `@location` card is played it sets the `#player` `location_id` and `last_location_id`.
 
+Every time a `@location` card is played, two events are fired, with no params:
+
+* `player_enters` on the destination `@location`
+* `changed_location` on `#player`
+
+These fire unconditionally, even if the location is the same as the one the player is
+already in (e.g. a "look around" action that replays the current location's card).
+
+`@location`'s default `on_player_enters` handler increments `visit_count`. Since it runs
+before any location-specific `on_player_enters` handler you add, `visit_count` has
+already been incremented by the time your handler runs — check `location.visit_count === 1`
+to detect a first-time visit. You can layer additional behaviour on top with:
+
+```
+@location my_location {
+  on_player_enters: +(location) => {
+    %% your custom behaviour
+  }
+}
+```
+
+For behaviour that should run regardless of which location was entered — quest
+triggers, UI updates, and so on — hook `#player`'s `changed_location` event instead:
+
+```
+@actor player {
+  on_changed_location: +(player, params) => {
+    %% your custom behaviour
+  }
+}
+```
+
+Handlers receive no params; read `location.id`, `player.location_id`, and
+`player.last_location_id` directly.
+
 | Attribute   | Required | Description                                   |
 |-------------|----------|-----------------------------------------------|
 | zone_id     |     Y    | The id of the @zone the location belongs to   |
